@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Formulario de Inventario</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #999; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .btn { background-color: green; color: white; padding: 10px; border: none; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <h2>Registro de herramientas por técnico</h2>
+    <form method="POST">
+        <label for="tecnico">Selecciona el técnico:</label>
+        <select name="tecnico" id="tecnico" required>
+            {% for tecnico in tecnicos %}
+                <option value="{{ tecnico }}">{{ tecnico }}</option>
+            {% endfor %}
+        </select>
+
+        <table>
+            <tr>
+                <th>Herramienta</th>
+                <th>¿La tiene?</th>
+                <th>Cantidad</th>
+                <th>Estado</th>
+                <th>Observación</th>
+            </tr>
+            {% for herramienta in herramientas %}
+            <tr>
+                <td>{{ herramienta }}</td>
+                <td><input type="checkbox" name="tiene_{{ herramienta }}"></td>
+                <td><input type="number" name="cantidad_{{ herramienta }}" min="0" value="0"></td>
+                <td>
+                    <select name="estado_{{ herramienta }}">
+                        {% for estado in estados %}
+                            <option value="{{ estado }}">{{ estado }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td><input type="text" name="observacion_{{ herramienta }}"></td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <button type="submit" class="btn">Guardar</button>
+    </form>
+</body>
+</html>
