@@ -8,7 +8,8 @@ app = Flask(__name__)
 
 # Autenticación con Google Sheets usando variable de entorno
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-google_creds = json.loads(os.environ["GOOGLE_SHEETS_CREDENTIALS"])
+with open("creds.json") as archivo:
+    google_creds = json.load(archivo)
 creds = ServiceAccountCredentials.from_json_keyfile_dict(google_creds, scope)
 cliente_gs = gspread.authorize(creds)
 hoja = cliente_gs.open("Inventario Taller").sheet1  # Asegúrate que coincida con tu hoja
@@ -41,5 +42,6 @@ def formulario():
     return render_template("formulario.html", herramientas=herramientas, estados=estados, tecnicos=tecnicos)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Render asigna el puerto por variable de entorno
+    app.run(host="0.0.0.0", port=port, debug=True)
 
