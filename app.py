@@ -6,13 +6,18 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 app = Flask(__name__)
 
-# Autenticación con Google Sheets usando variable de entorno
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-with open("creds.json") as archivo:
-    google_creds = json.load(archivo)
+
+# Si estás en local, usa creds.json; si estás en Render, usa variable de entorno
+if "GOOGLE_SHEETS_CREDENTIALS" in os.environ:
+    google_creds = json.loads(os.environ["GOOGLE_SHEETS_CREDENTIALS"])
+else:
+    with open("creds.json") as f:
+        google_creds = json.load(f)
+
 creds = ServiceAccountCredentials.from_json_keyfile_dict(google_creds, scope)
 cliente_gs = gspread.authorize(creds)
-hoja = cliente_gs.open("Inventario Taller").sheet1  # Asegúrate que coincida con tu hoja
+hoja = cliente_gs.open("Inventario Taller").sheet1
 
 # Lista de herramientas y estados
 herramientas = [
