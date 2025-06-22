@@ -1,2 +1,4 @@
 flask
 openpyxl
+gspread
+oauth2client
