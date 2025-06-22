@@ -1,44 +1,45 @@
-from flask import Flask, render_template, request, redirect
-import openpyxl
+from flask import Flask, render_template, request
+import gspread
+import json
 import os
+from oauth2client.service_account import ServiceAccountCredentials
 
 app = Flask(__name__)
 
-# Datos base
-archivo_excel = "registro_inventario.xlsx"
-tecnicos = ["Carlos", "María", "Luis", "Ana"]
-herramientas = ["Llave inglesa", "Destornillador", "Martillo", "Alicate", "Taladro"]
+# Autenticación con Google Sheets usando variable de entorno
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+google_creds = json.loads(os.environ["GOOGLE_SHEETS_CREDENTIALS"])
+creds = ServiceAccountCredentials.from_json_keyfile_dict(google_creds, scope)
+cliente_gs = gspread.authorize(creds)
+hoja = cliente_gs.open("Inventario Taller").sheet1  # Asegúrate que coincida con tu hoja
+
+# Lista de herramientas y estados
+herramientas = [
+    "Llave inglesa", "Destornillador", "Alicate", "Multímetro", "Taladro",
+    "Martillo", "Cinta métrica", "Pistola de calor", "Llave Allen", "Compresómetro"
+]
+
 estados = ["Buena", "Malograda", "No sirve"]
 
-# Crear archivo Excel si no existe
-if not os.path.exists(archivo_excel):
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Inventario"
-    ws.append(["Técnico", "Herramienta", "Cantidad", "Estado", "Observación"])
-    wb.save(archivo_excel)
+# Lista de técnicos
+tecnicos = ["Juan", "María", "Carlos", "Ana", "Pedro"]
 
 @app.route("/", methods=["GET", "POST"])
 def formulario():
     if request.method == "POST":
         tecnico = request.form.get("tecnico")
-        wb = openpyxl.load_workbook(archivo_excel)
-        ws = wb["Inventario"]
-
         for herramienta in herramientas:
-            tiene = request.form.get(f"tiene_{herramienta}") == "on"
-            cantidad = request.form.get(f"cantidad_{herramienta}", "0")
-            estado = request.form.get(f"estado_{herramienta}", "Sin especificar")
-            observacion = request.form.get(f"observacion_{herramienta}", "")
+            tiene = request.form.get(f"tiene_{herramienta}")
+            cantidad = request.form.get(f"cantidad_{herramienta}")
+            estado = request.form.get(f"estado_{herramienta}")
+            observacion = request.form.get(f"observacion_{herramienta}")
 
             if tiene:
-                ws.append([tecnico, herramienta, cantidad, estado, observacion])
+                hoja.append_row([tecnico, herramienta, cantidad, estado, observacion])
+        return "¡Inventario registrado correctamente!"
 
-        wb.save(archivo_excel)
-        return redirect("/")
-
-    return render_template("formulario.html", tecnicos=tecnicos, herramientas=herramientas, estados=estados)
+    return render_template("formulario.html", herramientas=herramientas, estados=estados, tecnicos=tecnicos)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True)
+
