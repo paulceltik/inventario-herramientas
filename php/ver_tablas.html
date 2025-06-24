@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Herramientas y Técnicos</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 40px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #f0f0f0; }
+        h2 { margin-top: 40px; }
+        .loading { color: #888; }
+    </style>
+</head>
+<body>
+    <h1>Inventario</h1>
+    <div style="margin-bottom: 20px;">
+        <label for="selector-tipo"><strong>Ver:</strong></label>
+        <select id="selector-tipo">
+            <option value="herramientas">Herramientas</option>
+            <option value="tecnicos">Técnicos</option>
+        </select>
+        <input type="text" id="buscador" placeholder="Buscar..." style="margin-left:20px;">
+        <button id="btn-agregar" style="float:right;">Agregar nuevo</button>
+    </div>
+    <div id="tabla-loading" class="loading">Cargando datos...</div>
+    <table id="tabla-dinamica" style="display:none;">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+    <div id="paginacion-container" style="margin-top:10px;">
+        <button id="btn-anterior">Anterior</button>
+        <span id="paginacion">Página 1</span>
+        <button id="btn-siguiente">Siguiente</button>
+    </div>
+    <!-- Modal para agregar/editar registro -->
+    <div id="modal-registro" class="modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
+        <div style="background:#fff; padding:24px 16px; border-radius:8px; min-width:320px; max-width:90vw; position:relative;">
+            <button id="cerrar-modal" style="position:absolute; top:8px; right:12px; font-size:20px; background:none; border:none; cursor:pointer;">&times;</button>
+            <h2 id="modal-titulo">Agregar/Editar Registro</h2>
+            <form id="form-registro">
+                <input type="hidden" id="modal-id" name="ID">
+                <div id="modal-campos"></div>
+                <div style="margin-top:16px; text-align:right;">
+                    <button type="submit" id="guardar-registro" style="background:#2563eb; color:#fff; padding:8px 20px; border:none; border-radius:4px;">Guardar</button>
+                </div>
+            </form>
+            <div id="modal-mensaje" style="margin-top:10px;"></div>
+        </div>
+    </div>
+    <script type="module" src="main.js"></script>
+</body>
+</html>
